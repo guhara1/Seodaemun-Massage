@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.seodaemun-ganda.example.com/sitemap.xml
