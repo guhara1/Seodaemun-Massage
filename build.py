@@ -13,6 +13,8 @@ import os
 import re
 import shutil
 import sys
+from datetime import datetime, timezone
+from email.utils import format_datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -253,6 +255,7 @@ def render_page(page: dict) -> str:
 def build() -> None:
     report = []
     sitemap_urls = []
+    rss_items = []
 
     for page in PAGES:
         path = page["path"]  # "" 또는 "seodaemun-gu/hongje-dong/" 형태
@@ -266,11 +269,15 @@ def build() -> None:
         noindex = page.get("noindex", False) or chars < MIN_INDEX_CHARS
         if not noindex:
             sitemap_urls.append(BASE_URL.rstrip("/") + "/" + path)
-        report.append((path or "/", chars, "noindex" if noindex else "index"))
+            rss_items.append(page)
+        desc_flag = " ⚠desc>80" if len(page["desc"]) > 80 else ""
+        report.append((path or "/", chars, ("noindex" if noindex else "index") + desc_flag))
 
-    # sitemap.xml
+    # sitemap.xml — lastmod 포함 (네이버·구글 빠른 색인용)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     urls = "\n".join(
-        f"  <url><loc>{u}</loc></url>" for u in sitemap_urls
+        f"  <url><loc>{u}</loc><lastmod>{today}</lastmod></url>"
+        for u in sitemap_urls
     )
     with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write(
@@ -279,11 +286,42 @@ def build() -> None:
             f"{urls}\n</urlset>\n"
         )
 
-    # robots.txt
+    # rss.xml — 네이버 서치어드바이저 RSS 제출용 (RSS 2.0)
+    now_rfc822 = format_datetime(datetime.now(timezone.utc))
+    base = BASE_URL.rstrip("/")
+    items = []
+    for page in rss_items:
+        loc = base + "/" + page["path"]
+        items.append(
+            "  <item>\n"
+            f"    <title>{html.escape(page['title'])}</title>\n"
+            f"    <link>{loc}</link>\n"
+            f"    <guid isPermaLink=\"true\">{loc}</guid>\n"
+            f"    <description>{html.escape(page['desc'])}</description>\n"
+            f"    <pubDate>{now_rfc822}</pubDate>\n"
+            "  </item>"
+        )
+    with open(os.path.join(ROOT, "rss.xml"), "w", encoding="utf-8") as f:
+        f.write(
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<rss version="2.0">\n<channel>\n'
+            f"  <title>{html.escape(BRAND)} — 서대문 출장마사지·홈타이 안내</title>\n"
+            f"  <link>{base}/</link>\n"
+            "  <description>서대문구 전지역 방문 관리 안내. 지역별·지하철역별·테마별 페이지와 매거진 소식을 제공합니다.</description>\n"
+            "  <language>ko</language>\n"
+            f"  <lastBuildDate>{now_rfc822}</lastBuildDate>\n"
+            + "\n".join(items)
+            + "\n</channel>\n</rss>\n"
+        )
+
+    # robots.txt — 전체 허용 + 네이버(Yeti)·구글(Googlebot) 명시, sitemap/rss 참조
     with open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8") as f:
         f.write(
             "User-agent: *\nAllow: /\n\n"
-            f"Sitemap: {BASE_URL.rstrip('/')}/sitemap.xml\n"
+            "User-agent: Googlebot\nAllow: /\n\n"
+            "User-agent: Yeti\nAllow: /\n\n"
+            f"Sitemap: {base}/sitemap.xml\n"
+            f"Sitemap: {base}/rss.xml\n"
         )
 
     # .nojekyll (GitHub Pages)
