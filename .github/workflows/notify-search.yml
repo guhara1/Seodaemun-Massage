@@ -1,0 +1,48 @@
+name: 검색엔진 색인 통보 (IndexNow + Google Indexing API)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/index.html"
+      - "sitemap.xml"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "all = sitemap 전체 URL 통보 / changed = 직전 커밋 변경분만"
+        required: false
+        default: "all"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: google-auth 설치 (Indexing API용)
+        run: pip install --quiet google-auth requests
+
+      - name: 서비스 계정 키 복원 (선택 — 시크릿 없으면 IndexNow만 동작)
+        if: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON != '' }}
+        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > /tmp/gsa.json
+
+      - name: 변경 URL 수집 및 통보
+        env:
+          GOOGLE_SERVICE_ACCOUNT_FILE: /tmp/gsa.json
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.mode }}" = "all" ]; then
+            python3 scripts/notify_search.py
+          else
+            CHANGED=$(git diff --name-only HEAD^ HEAD -- '**/index.html' 'index.html' | tr '\n' ' ')
+            if [ -n "$CHANGED" ]; then
+              python3 scripts/notify_search.py --changed $CHANGED
+            else
+              python3 scripts/notify_search.py
+            fi
+          fi

@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.seodaemun-ganda.example.com/sitemap.xml
+User-agent: Googlebot
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
+Sitemap: https://seodaemun-massage.pages.dev/sitemap.xml
+Sitemap: https://seodaemun-massage.pages.dev/rss.xml
