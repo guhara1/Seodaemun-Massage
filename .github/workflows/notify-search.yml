@@ -2,10 +2,9 @@ name: 검색엔진 색인 통보 (IndexNow + Google Indexing API)
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "**/index.html"
-      - "sitemap.xml"
+    branches:
+      - main
+      - "claude/**"
   workflow_dispatch:
     inputs:
       mode:
