@@ -28,8 +28,15 @@ jobs:
         run: pip install --quiet google-auth requests
 
       - name: 서비스 계정 키 복원 (선택 — 시크릿 없으면 IndexNow만 동작)
-        if: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON != '' }}
-        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > /tmp/gsa.json
+        env:
+          GSA_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -n "$GSA_JSON" ]; then
+            printf '%s' "$GSA_JSON" > /tmp/gsa.json
+            echo "서비스 계정 키 복원 완료"
+          else
+            echo "GOOGLE_SERVICE_ACCOUNT_JSON 시크릿 없음 — IndexNow만 실행"
+          fi
 
       - name: 변경 URL 수집 및 통보
         env:
