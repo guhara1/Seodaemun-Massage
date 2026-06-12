@@ -1,0 +1,220 @@
+/* 간다 GO — 서대문 출장마사지 공통 스타일 */
+:root {
+  --primary: #1d5c50;
+  --primary-dark: #133f37;
+  --accent: #c9a227;
+  --accent-soft: #f3e9c8;
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --text: #2b2b2b;
+  --text-light: #6b6b6b;
+  --border: #e7e2d8;
+  --radius: 14px;
+  --shadow: 0 2px 14px rgba(29, 92, 80, 0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+
+body {
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { color: var(--primary-dark); }
+
+img { max-width: 100%; height: auto; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+/* ===== 헤더 ===== */
+.site-header {
+  position: sticky; top: 0; z-index: 1000;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+}
+.header-inner {
+  max-width: 1080px; margin: 0 auto; padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: 64px; flex-wrap: wrap;
+}
+.logo { font-size: 1.35rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+.logo .go { color: var(--accent); }
+.header-tel {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--primary); color: #fff; font-weight: 700;
+  padding: 8px 16px; border-radius: 999px; font-size: 0.95rem;
+}
+.header-tel:hover { background: var(--primary-dark); color: #fff; }
+
+/* ===== 내비게이션 ===== */
+.nav-toggle { display: none; }
+.nav-toggle-label {
+  display: none; cursor: pointer; font-size: 1.6rem; color: var(--primary);
+  padding: 6px 10px; user-select: none;
+}
+.main-nav { width: 100%; }
+.main-nav > ul {
+  list-style: none; display: flex; flex-wrap: wrap; gap: 2px;
+  border-top: 1px solid var(--border);
+}
+.main-nav > ul > li { position: relative; }
+.main-nav > ul > li > a {
+  display: block; padding: 12px 13px; font-weight: 600; font-size: 0.95rem; color: var(--text);
+}
+.main-nav > ul > li > a:hover { color: var(--primary); }
+.main-nav .sub {
+  display: none; position: absolute; left: 0; top: 100%; min-width: 200px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: var(--shadow); padding: 8px 0; list-style: none; z-index: 1001;
+}
+.main-nav li:hover > .sub, .main-nav li:focus-within > .sub { display: block; }
+.main-nav .sub li a {
+  display: block; padding: 8px 18px; font-size: 0.9rem; color: var(--text);
+}
+.main-nav .sub li a:hover { background: var(--accent-soft); color: var(--primary-dark); }
+
+@media (max-width: 860px) {
+  .nav-toggle-label { display: block; }
+  .main-nav { display: none; }
+  .nav-toggle:checked ~ .main-nav { display: block; }
+  .main-nav > ul { flex-direction: column; border-top: 1px solid var(--border); }
+  .main-nav .sub {
+    display: block; position: static; border: none; box-shadow: none;
+    padding-left: 16px; background: transparent;
+  }
+}
+
+/* ===== 히어로 ===== */
+.hero {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: #fff; padding: 64px 0 56px; text-align: center;
+}
+.hero h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 14px; }
+.hero p { max-width: 640px; margin: 0 auto 26px; color: #e6efe9; font-size: 1.02rem; }
+.hero .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-block; padding: 13px 30px; border-radius: 999px;
+  font-weight: 700; font-size: 1rem;
+}
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:hover { background: #b08e1e; color: #fff; }
+.btn-outline { border: 2px solid rgba(255,255,255,0.7); color: #fff; }
+.btn-outline:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+/* ===== 본문 섹션 ===== */
+.page-body { padding: 48px 0 64px; }
+section.block { margin-bottom: 48px; }
+section.block h2 {
+  font-size: 1.45rem; font-weight: 800; color: var(--primary-dark);
+  margin-bottom: 16px; padding-left: 14px; border-left: 5px solid var(--accent);
+  letter-spacing: -0.3px;
+}
+section.block h3 { font-size: 1.1rem; margin: 18px 0 8px; color: var(--primary-dark); }
+section.block p { margin-bottom: 12px; color: var(--text); }
+section.block ul, section.block ol { margin: 0 0 12px 22px; }
+section.block li { margin-bottom: 6px; }
+
+/* ===== 카드 그리드 ===== */
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px; margin-top: 18px;
+}
+.card-grid a {
+  display: block; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 14px; text-align: center;
+  font-weight: 700; color: var(--text); box-shadow: var(--shadow);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.card-grid a:hover { transform: translateY(-3px); border-color: var(--accent); color: var(--primary); }
+.card-grid a span { display: block; font-size: 0.8rem; font-weight: 400; color: var(--text-light); margin-top: 4px; }
+
+/* ===== 정보 박스 ===== */
+.info-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow);
+  margin-top: 14px;
+}
+.notice {
+  background: var(--accent-soft); border-left: 5px solid var(--accent);
+  border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.95rem;
+}
+
+/* ===== FAQ ===== */
+.faq details {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; margin-bottom: 10px; overflow: hidden;
+}
+.faq summary {
+  cursor: pointer; padding: 15px 18px; font-weight: 700; color: var(--primary-dark);
+  list-style: none; position: relative; padding-right: 40px;
+}
+.faq summary::after {
+  content: "+"; position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+  color: var(--accent); font-size: 1.3rem; font-weight: 700;
+}
+.faq details[open] summary::after { content: "−"; }
+.faq details p { padding: 0 18px 16px; color: var(--text); }
+
+/* ===== 예약 CTA ===== */
+.reserve-cta {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--radius); color: #fff; text-align: center;
+  padding: 38px 24px;
+}
+.reserve-cta h2 { color: #fff !important; border: none !important; padding: 0 !important; margin-bottom: 10px; }
+.reserve-cta p { color: #dcebe4; margin-bottom: 20px; }
+.reserve-cta .tel-big { font-size: 1.7rem; font-weight: 800; color: var(--accent); display: block; margin-bottom: 14px; }
+
+/* ===== 표 ===== */
+.tbl { width: 100%; border-collapse: collapse; margin: 14px 0; background: var(--surface); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); }
+.tbl th, .tbl td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.95rem; }
+.tbl th { background: var(--primary); color: #fff; font-weight: 700; }
+.tbl tr:last-child td { border-bottom: none; }
+
+/* ===== 브레드크럼 ===== */
+.breadcrumb { font-size: 0.85rem; color: var(--text-light); padding: 16px 0 0; }
+.breadcrumb a { color: var(--text-light); }
+.breadcrumb a:hover { color: var(--primary); }
+
+/* ===== 내부 링크 ===== */
+.related-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.related-links a {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+  padding: 8px 18px; font-size: 0.9rem; font-weight: 600;
+}
+.related-links a:hover { border-color: var(--accent); }
+
+/* ===== 푸터 ===== */
+.site-footer {
+  background: var(--primary-dark); color: #b9cfc7; padding: 36px 0; font-size: 0.88rem;
+}
+.site-footer .footer-inner { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+.site-footer .biz { margin-bottom: 12px; line-height: 1.9; }
+.site-footer .biz strong { color: #fff; font-size: 1.05rem; }
+.site-footer .footer-links { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.site-footer .footer-links a { color: #d7e6df; }
+.site-footer .footer-links a:hover { color: var(--accent); }
+.site-footer .copy { color: #8aa79c; font-size: 0.8rem; }
+
+/* ===== 플로팅 전화 버튼 ===== */
+.floating-call {
+  position: fixed; right: 18px; bottom: 18px; z-index: 1100;
+  background: var(--accent); color: #fff; font-weight: 800;
+  padding: 14px 22px; border-radius: 999px; box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+  font-size: 1rem;
+}
+.floating-call:hover { background: #b08e1e; color: #fff; }
+
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.5rem; }
+  section.block h2 { font-size: 1.25rem; }
+  .card-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+}
