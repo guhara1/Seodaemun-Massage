@@ -1,74 +1,7 @@
 # 메인 페이지 — 허브 역할. 모든 키워드를 밀어 넣지 않고 상세 페이지로 연결한다.
-from .site import BASE_URL, BRAND, PHONE, PHONE_DISPLAY
+# JSON-LD(비즈니스·FAQ·평점)와 네이버 사이트 인증은 build.py가 전역으로 생성한다.
+from .site import BRAND, PHONE, PHONE_DISPLAY
 from .pricing import PRICING
-
-_JSONLD = f"""<meta name="naver-site-verification" content="3baf1de1b615775f74dcb5d188686866f62d15de">
-<script type="application/ld+json">
-{{
-  "@context": "https://schema.org",
-  "@type": "HealthAndBeautyBusiness",
-  "name": "{BRAND}",
-  "telephone": "{PHONE}",
-  "url": "{BASE_URL}/",
-  "image": "{BASE_URL}/assets/og-image.png",
-  "description": "서대문구 전지역 방문 출장마사지·홈타이 예약 안내",
-  "areaServed": {{
-    "@type": "AdministrativeArea",
-    "name": "서울특별시 서대문구"
-  }},
-  "openingHours": "Mo-Su 00:00-24:00",
-  "priceRange": "₩90,000 - ₩180,000"
-}}
-</script>
-<script type="application/ld+json">
-{{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {{
-      "@type": "Question",
-      "name": "서대문구 전지역 방문이 가능한가요?",
-      "acceptedAnswer": {{
-        "@type": "Answer",
-        "text": "예약 시간, 정확한 위치, 배정 상황에 따라 가능 여부가 달라집니다. 지역별 안내 페이지에서 충현동부터 북가좌동까지 대표 동 9곳 기준으로 확인할 수 있습니다."
-      }}
-    }},
-    {{
-      "@type": "Question",
-      "name": "신촌역이나 홍제역 근처도 가능한가요?",
-      "acceptedAnswer": {{
-        "@type": "Answer",
-        "text": "주요 역세권은 역 상세 페이지에서 주변 생활권과 함께 안내합니다. 정확한 가능 여부는 예약 시 위치를 기준으로 확인합니다."
-      }}
-    }},
-    {{
-      "@type": "Question",
-      "name": "홍제1동과 홍제2동은 왜 따로 없나요?",
-      "acceptedAnswer": {{
-        "@type": "Answer",
-        "text": "홍제1동부터 홍제3동까지는 홍제동 대표 페이지에서 통합 안내하여 중복 페이지 위험을 줄입니다."
-      }}
-    }},
-    {{
-      "@type": "Question",
-      "name": "당일 예약도 가능한가요?",
-      "acceptedAnswer": {{
-        "@type": "Answer",
-        "text": "가능할 수 있지만 저녁 시간대와 주말은 문의가 많을 수 있어 사전 예약을 권장합니다."
-      }}
-    }},
-    {{
-      "@type": "Question",
-      "name": "테마별 관리는 어디에서 확인하나요?",
-      "acceptedAnswer": {{
-        "@type": "Answer",
-        "text": "스웨디시, 타이마사지, 홈케어 등 테마별 안내 페이지에서 특징과 추천 대상을 확인할 수 있습니다."
-      }}
-    }}
-  ]
-}}
-</script>
-"""
 
 _HERO = f"""<section class="hero">
   <div class="hero-inner">
@@ -212,7 +145,16 @@ PAGE = {
     "desc": "서대문 출장마사지·홈타이 안내입니다. 대표 동 9곳과 주요 역세권, 테마별 관리, 예약 전 확인사항을 확인해보세요.",
     "h1": "서대문 출장마사지·홈타이 예약 안내",
     "body": _BODY,
-    "extra_head": _JSONLD,
+    "related": [
+        ("/seodaemun-gu/", "서대문구 동별 출장마사지 가능 지역 한눈에 보기"),
+        ("/seodaemun-gu/stations/", "신촌·홍제·충정로역 인근 방문 마사지 안내"),
+        ("/themes/swedish/", "어깨·목 결림에 좋은 스웨디시 관리 알아보기"),
+        ("/magazine/swedish-vs-thai/", "스웨디시와 타이마사지 차이 비교 가이드"),
+        ("/magazine/first-time-guide/", "출장마사지 처음 이용자를 위한 예약 가이드"),
+        ("/themes/24hours/", "심야·24시간 방문 마사지 예약하는 법"),
+        ("/themes/couple/", "커플이 함께 받는 홈타이 커플 관리"),
+        ("/courses/", "60·90·120분 코스 선택 기준과 요금 안내"),
+    ],
     "breadcrumb": [],
     "hero": _HERO,
 }

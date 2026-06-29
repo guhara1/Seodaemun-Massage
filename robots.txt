@@ -7,5 +7,5 @@ Allow: /
 User-agent: Yeti
 Allow: /
 
-Sitemap: https://seodaemun-massage.pages.dev/sitemap.xml
-Sitemap: https://seodaemun-massage.pages.dev/rss.xml
+Sitemap: https://seodaemun-massage.netlify.app/sitemap.xml
+Sitemap: https://seodaemun-massage.netlify.app/rss.xml

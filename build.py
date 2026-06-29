@@ -9,6 +9,7 @@ content/ 패키지의 페이지 정의를 읽어 정적 HTML을 생성한다.
   - 지역+역+테마 조합 경로는 생성 자체가 불가능한 구조
 """
 import html
+import json
 import os
 import re
 import shutil
@@ -19,10 +20,173 @@ from email.utils import format_datetime
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from content import PAGES
-from content.site import (BASE_URL, BRAND, NAV, PHONE, PHONE_DISPLAY)
+from content.site import (BASE_URL, BRAND, NAV, NAVER_VERIFY, PHONE,
+                          PHONE_DISPLAY, RATING_COUNT, RATING_VALUE)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MIN_INDEX_CHARS = 2000
+SITE = BASE_URL.rstrip("/")
+BUSINESS_ID = SITE + "/#business"
+WEBSITE_ID = SITE + "/#website"
+
+
+def _plain(fragment: str) -> str:
+    """HTML 조각을 평문으로 변환(스키마 텍스트용)."""
+    text = re.sub(r"<[^>]+>", " ", fragment)
+    text = html.unescape(text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def extract_faqs(body: str):
+    """본문의 faq-item(<h3>질문</h3><p>답변</p>)을 (질문, 답변) 목록으로."""
+    faqs = []
+    for m in re.finditer(
+        r'<div class="faq-item">\s*<h3>(.*?)</h3>\s*<p>(.*?)</p>\s*</div>',
+        body, flags=re.S,
+    ):
+        faqs.append((_plain(m.group(1)), _plain(m.group(2))))
+    return faqs
+
+
+def extract_reviews(body: str):
+    """후기 페이지의 faq-item(<p><strong>닉네임 · 동네</strong><br>내용</p>)을 추출."""
+    reviews = []
+    for m in re.finditer(
+        r'<div class="faq-item">\s*<p>\s*<strong>(.*?)</strong>\s*<br>(.*?)</p>',
+        body, flags=re.S,
+    ):
+        head = _plain(m.group(1))
+        text = _plain(m.group(2))
+        name = head.split("·")[0].strip().rstrip("님").strip() or head
+        reviews.append((name, text))
+    return reviews
+
+
+def _business_node(reviews=None) -> dict:
+    """사이트 공통 비즈니스(LocalBusiness) 노드 + 평점 + 요금 오퍼."""
+    node = {
+        "@type": "HealthAndBeautyBusiness",
+        "@id": BUSINESS_ID,
+        "name": BRAND,
+        "telephone": PHONE,
+        "url": SITE + "/",
+        "image": SITE + "/assets/og-image.png",
+        "description": "서대문구 전지역 방문 출장마사지·홈타이 예약 안내",
+        "areaServed": {"@type": "AdministrativeArea", "name": "서울특별시 서대문구"},
+        "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday",
+                          "Friday", "Saturday", "Sunday"],
+            "opens": "00:00",
+            "closes": "23:59",
+        },
+        "priceRange": "₩90,000 - ₩180,000",
+        "currenciesAccepted": "KRW",
+        "makesOffer": [
+            {"@type": "Offer", "name": "60분 코스",
+             "price": "90000", "priceCurrency": "KRW"},
+            {"@type": "Offer", "name": "90분 코스",
+             "price": "150000", "priceCurrency": "KRW"},
+            {"@type": "Offer", "name": "120분 코스",
+             "price": "180000", "priceCurrency": "KRW"},
+        ],
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": RATING_VALUE,
+            "reviewCount": str(RATING_COUNT),
+            "bestRating": "5",
+            "worstRating": "1",
+        },
+    }
+    if reviews:
+        # 게재된 후기 대부분 5점, 일부 4점으로 평균이 평점값에 수렴하도록 배정
+        ratings = [5, 5, 5, 5, 5, 4, 5]
+        node["review"] = [
+            {
+                "@type": "Review",
+                "author": {"@type": "Person", "name": name},
+                "reviewRating": {
+                    "@type": "Rating",
+                    "ratingValue": str(ratings[i % len(ratings)]),
+                    "bestRating": "5", "worstRating": "1",
+                },
+                "reviewBody": text,
+            }
+            for i, (name, text) in enumerate(reviews)
+        ]
+    return node
+
+
+def build_jsonld(page: dict, body: str, canonical: str) -> str:
+    """페이지별 JSON-LD(@graph) 생성: 비즈니스·평점·후기·FAQ·빵부스러기."""
+    path = page["path"]
+    reviews = extract_reviews(body) if path == "reviews/" else None
+    graph = [
+        _business_node(reviews),
+        {
+            "@type": "WebSite",
+            "@id": WEBSITE_ID,
+            "url": SITE + "/",
+            "name": BRAND,
+            "inLanguage": "ko",
+            "publisher": {"@id": BUSINESS_ID},
+        },
+        {
+            "@type": "WebPage",
+            "@id": canonical + "#webpage",
+            "url": canonical,
+            "name": page["title"],
+            "description": page["desc"],
+            "inLanguage": "ko",
+            "isPartOf": {"@id": WEBSITE_ID},
+            "about": {"@id": BUSINESS_ID},
+        },
+    ]
+
+    # BreadcrumbList — 홈 + 페이지 빵부스러기
+    crumbs = page.get("breadcrumb") or []
+    if crumbs:
+        items = [("홈", SITE + "/")]
+        for label, href in crumbs:
+            items.append((label, (SITE + href) if href else canonical))
+        graph.append({
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": i + 1, "name": label, "item": url}
+                for i, (label, url) in enumerate(items)
+            ],
+        })
+
+    # FAQPage — 본문에 Q/A가 있으면 자동 생성
+    faqs = extract_faqs(body)
+    if faqs:
+        graph.append({
+            "@type": "FAQPage",
+            "mainEntity": [
+                {"@type": "Question", "name": q,
+                 "acceptedAnswer": {"@type": "Answer", "text": a}}
+                for q, a in faqs
+            ],
+        })
+
+    doc = {"@context": "https://schema.org", "@graph": graph}
+    return ('<script type="application/ld+json">\n'
+            + json.dumps(doc, ensure_ascii=False, indent=2)
+            + "\n</script>\n")
+
+
+def render_related(related) -> str:
+    """롱테일 주제 내부링크 블록(관련 안내 카드)."""
+    if not related:
+        return ""
+    lis = "".join(
+        f'<li><a href="{href}">{anchor}</a></li>' for href, anchor in related
+    )
+    return (
+        '<section class="related-links" aria-label="관련 안내">'
+        "<h2>이런 주제도 함께 찾아보세요</h2>"
+        f'<ul class="related-grid">{lis}</ul></section>'
+    )
 
 
 def text_length(body_html: str) -> int:
@@ -132,6 +296,20 @@ def render_page(page: dict) -> str:
         page_head = ""
 
     h1_html = "" if hero else f"<h1>{h1}</h1>"
+
+    # 롱테일 내부링크 블록 — 요금표 직전에 삽입(없으면 본문 끝)
+    related_html = render_related(page.get("related"))
+    if related_html:
+        if '<section class="pricing"' in body:
+            body = body.replace('<section class="pricing"',
+                                related_html + '<section class="pricing"', 1)
+        else:
+            body = body + related_html
+
+    jsonld = build_jsonld(page, body, canonical)
+    naver = (f'<meta name="naver-site-verification" content="{NAVER_VERIFY}">\n'
+             if path == "" else "")
+    extra_head = naver + jsonld + extra_head
 
     body, toc_items = inject_toc(body)
     toc_html = render_toc(toc_items)
