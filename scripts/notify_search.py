@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""검색엔진 즉시 색인 통보 스크립트 — 간다 GO (seodaemun-massage.pages.dev)
+"""검색엔진 즉시 색인 통보 스크립트 — 간다 GO (seodaemun-massage.netlify.app)
 
 기능:
   1. IndexNow  — 빙(Bing)·네이버 등 IndexNow 참여 엔진에 URL 변경 즉시 통보

@@ -597,4 +597,73 @@ HUB = {
     "breadcrumb": [("지역별 안내", None)],
 }
 
+# 지역별 롱테일 내부링크 — 인근 역세권 + 어울리는 테마 + 매거진을 동 이름과 함께 연결
+_RELATED = {
+    "seodaemun-gu/": [
+        ("/seodaemun-gu/stations/", "서대문구 지하철역 인근 출장마사지 안내"),
+        ("/themes/", "스웨디시·타이 등 테마별 방문 관리 비교"),
+        ("/magazine/first-time-guide/", "서대문구 출장마사지 처음 이용 가이드"),
+        ("/reviews/", "서대문구 동별 실제 이용 후기 모음"),
+    ],
+    "seodaemun-gu/chunghyeon-dong/": [
+        ("/seodaemun-gu/stations/chungjeongno-station/", "충정로역 인근 출장마사지·홈타이 안내"),
+        ("/themes/swedish/", "충현동 야근 후 어깨 풀어주는 스웨디시"),
+        ("/themes/24hours/", "충현동 심야 24시간 방문 마사지"),
+        ("/magazine/neck-shoulder-care/", "사무직 목·어깨 결림 관리법"),
+    ],
+    "seodaemun-gu/cheonyeon-dong/": [
+        ("/seodaemun-gu/stations/dongnimmun-station/", "독립문역 인근 출장마사지 안내"),
+        ("/themes/aroma/", "천연동에서 받는 아로마테라피 관리"),
+        ("/themes/homecare/", "천연동 자택 방문 홈케어 안내"),
+        ("/magazine/sleep-and-massage/", "수면의 질을 높이는 마사지 이야기"),
+    ],
+    "seodaemun-gu/bugahyeon-dong/": [
+        ("/seodaemun-gu/stations/ahyeon-station/", "아현역 인근 출장마사지 안내"),
+        ("/themes/swedish/", "북아현동 신축 단지 스웨디시 방문 관리"),
+        ("/themes/couple/", "북아현동 부부·커플 함께 받는 홈타이"),
+        ("/magazine/first-time-guide/", "처음 이용자를 위한 예약 가이드"),
+    ],
+    "seodaemun-gu/sinchon-dong/": [
+        ("/seodaemun-gu/stations/sinchon-station/", "신촌역 인근 출장마사지·홈타이 안내"),
+        ("/themes/thai/", "신촌동 원룸에서 받는 타이마사지"),
+        ("/themes/foot/", "신촌동 종일 걷고 부은 다리 발마사지"),
+        ("/magazine/swedish-vs-thai/", "스웨디시와 타이마사지 차이 비교"),
+    ],
+    "seodaemun-gu/yeonhui-dong/": [
+        ("/seodaemun-gu/stations/gajwa-station/", "가좌역 인근 출장마사지 안내"),
+        ("/themes/aroma/", "연희동 단독주택에서 받는 아로마 관리"),
+        ("/themes/homecare/", "연희동 정기 방문 홈케어 안내"),
+        ("/magazine/parents-gift/", "부모님 선물로 좋은 출장마사지"),
+    ],
+    "seodaemun-gu/hongje-dong/": [
+        ("/seodaemun-gu/stations/hongje-station/", "홍제역 인근 출장마사지·홈타이 안내"),
+        ("/themes/sports/", "홍제동 등산·운동 후 스포츠 경락"),
+        ("/themes/swedish/", "홍제동 주택가 스웨디시 방문 관리"),
+        ("/magazine/post-workout-timing/", "운동 후 회복 마사지 타이밍"),
+    ],
+    "seodaemun-gu/hongeun-dong/": [
+        ("/seodaemun-gu/stations/muakjae-station/", "무악재역 인근 출장마사지 안내"),
+        ("/themes/sports/", "홍은동 백련산 등산 후 경락 관리"),
+        ("/themes/overnight/", "홍은동 관리 후 그대로 잠드는 수면 관리"),
+        ("/magazine/sleep-and-massage/", "수면과 마사지의 관계"),
+    ],
+    "seodaemun-gu/namgajwa-dong/": [
+        ("/seodaemun-gu/stations/gajwa-station/", "가좌역 인근 출장마사지·홈타이 안내"),
+        ("/themes/couple/", "남가좌동 가재울뉴타운 커플 관리"),
+        ("/themes/homecare/", "남가좌동 자택 방문 홈케어 안내"),
+        ("/magazine/parents-gift/", "부모님 선물 출장마사지 가이드"),
+    ],
+    "seodaemun-gu/bukgajwa-dong/": [
+        ("/seodaemun-gu/stations/gajwa-station/", "가좌역 인근 출장마사지 안내"),
+        ("/themes/swedish/", "북가좌동 야근 후 스웨디시 방문 관리"),
+        ("/themes/24hours/", "북가좌동 심야 24시간 방문 마사지"),
+        ("/magazine/neck-shoulder-care/", "어깨·목 결림 집중 관리법"),
+    ],
+}
+
 PAGES = [HUB, CHUNGHYEON, CHEONYEON, BUGAHYEON, SINCHON, YEONHUI, HONGJE, HONGEUN, NAMGAJWA, BUKGAJWA]
+
+for _p in PAGES:
+    _rel = _RELATED.get(_p["path"])
+    if _rel:
+        _p["related"] = _rel

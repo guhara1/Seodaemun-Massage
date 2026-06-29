@@ -1,9 +1,16 @@
 # 사이트 공통 설정
-BASE_URL = "https://seodaemun-massage.pages.dev"
+BASE_URL = "https://seodaemun-massage.netlify.app"
 
 BRAND = "간다 GO"
 PHONE = "0508-202-4719"
 PHONE_DISPLAY = "0508-202-4719"
+
+# 네이버 서치어드바이저 사이트 소유확인 코드 (메인 페이지 head에 출력)
+NAVER_VERIFY = "7fef544e5a7d594f2f2c76f1c34c1c79210e50ed"
+
+# 후기 기반 평점(스키마 AggregateRating) — 실제 게재 후기 수와 평균 점수
+RATING_VALUE = "4.9"
+RATING_COUNT = 7
 
 # 상단 메뉴 — 하위 메뉴에는 키워드를 반복하지 않고 지역명·역명만 표시한다.
 NAV = [

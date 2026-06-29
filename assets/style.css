@@ -372,6 +372,36 @@ strong { color: var(--gold-soft); font-weight: 700; }
   background: linear-gradient(180deg, #13203a, var(--panel-2));
 }
 
+/* 관련 안내(롱테일 내부링크) */
+.related-links {
+  margin: 30px 0 8px; padding: 22px 24px;
+  background: linear-gradient(180deg, #101a30, var(--panel-2));
+  border: 1px solid var(--line-gold); border-radius: 14px;
+}
+.related-links h2 {
+  margin: 0 0 14px; font-size: 1.12rem;
+}
+.related-grid {
+  display: grid; gap: 10px; margin: 0; padding: 0;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  list-style: none;
+}
+.related-grid li { margin: 0; }
+.related-grid a {
+  display: block; padding: 13px 16px;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; color: var(--text); font-size: 0.92rem;
+  line-height: 1.45; transition: 0.18s;
+}
+.related-grid a::before {
+  content: "→ "; color: var(--gold); font-weight: 700;
+}
+.related-grid a:hover {
+  border-color: var(--gold); color: var(--gold-soft);
+  transform: translateX(3px);
+  background: linear-gradient(90deg, #13203a, var(--panel));
+}
+
 /* 안내 박스 */
 .info-box {
   background: var(--panel-2); border: 1px solid var(--line-gold);
